@@ -5,7 +5,6 @@ from dataclasses import dataclass
 
 import pygame
 
-
 # Game constants
 WIDTH, HEIGHT = 800, 600
 FPS = 60
@@ -135,17 +134,25 @@ class AIController:
             # Predict simplistic intercept point when ball moving towards AI
             predict_y = ball.y + ball.size / 2
             if ball.vx > 0:
-                time_to_ai = (self.paddle.x - (ball.x + ball.size)) / ball.vx if ball.vx != 0 else 0
+                time_to_ai = (
+                    (self.paddle.x - (ball.x + ball.size)) / ball.vx
+                    if ball.vx != 0
+                    else 0
+                )
                 if time_to_ai > 0:
                     predict_y = ball.y + ball.vy * time_to_ai
                     # Reflect prediction on top/bottom bounds to simulate bounces
-                    predict_y = self._reflect_predict(predict_y + ball.size / 2) - ball.size / 2
+                    predict_y = (
+                        self._reflect_predict(predict_y + ball.size / 2) - ball.size / 2
+                    )
 
             # Error scales with ball speed (faster ball -> more error) within bounds
             speed_ratio = min(1.0, ball.speed / BALL_MAX_SPEED)
             error = random.uniform(-22, 22) * (0.6 + 0.8 * speed_ratio)
-            self.target_y = max(0 + self.paddle.height / 2,
-                                 min(HEIGHT - self.paddle.height / 2, predict_y + error))
+            self.target_y = max(
+                0 + self.paddle.height / 2,
+                min(HEIGHT - self.paddle.height / 2, predict_y + error),
+            )
 
         # Move toward target with capped speed
         delta = self.target_y - self.paddle.center_y()
@@ -238,7 +245,12 @@ class Game:
         gap = 12
         x = WIDTH // 2 - 2
         for y in range(0, HEIGHT, dash_height + gap):
-            pygame.draw.rect(self.screen, DIM_WHITE, pygame.Rect(x, y, 4, dash_height), border_radius=2)
+            pygame.draw.rect(
+                self.screen,
+                DIM_WHITE,
+                pygame.Rect(x, y, 4, dash_height),
+                border_radius=2,
+            )
 
         # Draw entities
         self.left.draw(self.screen)
@@ -253,7 +265,9 @@ class Game:
 
         # Help text
         help_text = self.font_small.render("W/S: Move  |  ESC: Quit", True, DIM_WHITE)
-        self.screen.blit(help_text, (WIDTH / 2 - help_text.get_width() / 2, HEIGHT - 36))
+        self.screen.blit(
+            help_text, (WIDTH / 2 - help_text.get_width() / 2, HEIGHT - 36)
+        )
 
         pygame.display.flip()
 
